@@ -1,0 +1,56 @@
+# Python cache
+__pycache__/
+*.py[codz]
+*$py.class
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+03_env/
+
+# Environment files
+.env
+.env.*
+*.env
+
+# Jupyter / test / tooling cache
+.ipynb_checkpoints/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+htmlcov/
+
+# OS / editor files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Python build artifacts
+build/
+dist/
+*.egg-info/
+
+# Local generated data
+data/*.csv
+data/*.parquet
+data/*.xlsx
+!data/.gitkeep
+
+
+# BigQuery / GCP credentials
+*.json
+credentials*.json
+service-account*.json
+key*.json
+
+# Power BI local project cache
+**/.pbi/localSettings.json
+**/.pbi/cache.abf
+
+# Power BI binaries / temp
+*.tmp
