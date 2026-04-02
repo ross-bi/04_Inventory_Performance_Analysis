@@ -19,9 +19,9 @@ CREATE TABLE staging.stg_beg_inventory (
     "Price"             NUMERIC(10,2),
     "startDate"         VARCHAR(30)
 );
--- COPY staging.stg_beg_inventory
--- FROM '/absolute/path/to/data/raw/BegInvFINAL12312016.csv'
--- CSV HEADER ENCODING 'UTF8';
+COPY staging.stg_beg_inventory
+FROM '/absolute/path/to/data/raw/BegInvFINAL12312016.csv'
+CSV HEADER ENCODING 'UTF8';
 
 
 DROP TABLE IF EXISTS staging.stg_end_inventory;
@@ -36,9 +36,9 @@ CREATE TABLE staging.stg_end_inventory (
     "Price"             NUMERIC(10,2),
     "endDate"           VARCHAR(30)
 );
--- COPY staging.stg_end_inventory
--- FROM '/absolute/path/to/data/raw/EndInvFINAL12312016.csv'
--- CSV HEADER ENCODING 'UTF8';
+COPY staging.stg_end_inventory
+FROM '/absolute/path/to/data/raw/EndInvFINAL12312016.csv'
+CSV HEADER ENCODING 'UTF8';
 
 
 DROP TABLE IF EXISTS staging.stg_purchases;
@@ -59,9 +59,9 @@ CREATE TABLE staging.stg_purchases (
     "Dollars"           NUMERIC(14,2),
     "Classification"    VARCHAR(50)
 );
--- COPY staging.stg_purchases
--- FROM '/absolute/path/to/data/raw/PurchasesFINAL12312016.csv'
--- CSV HEADER ENCODING 'UTF8';
+COPY staging.stg_purchases
+FROM '/absolute/path/to/data/raw/PurchasesFINAL12312016.csv'
+CSV HEADER ENCODING 'UTF8';
 
 
 DROP TABLE IF EXISTS staging.stg_sales;
@@ -83,9 +83,9 @@ CREATE TABLE staging.stg_sales (
     "County"            INT,
     "City"              VARCHAR(100)
 );
--- COPY staging.stg_sales
--- FROM '/absolute/path/to/data/raw/SalesFINAL12312016.csv'
--- CSV HEADER ENCODING 'UTF8';
+COPY staging.stg_sales
+FROM '/absolute/path/to/data/raw/SalesFINAL12312016.csv'
+CSV HEADER ENCODING 'UTF8';
 
 
 DROP TABLE IF EXISTS staging.stg_invoice_purchases;
@@ -101,9 +101,9 @@ CREATE TABLE staging.stg_invoice_purchases (
     "Freight"           NUMERIC(10,2),
     "Approval"          VARCHAR(30)
 );
--- COPY staging.stg_invoice_purchases
--- FROM '/absolute/path/to/data/raw/InvoicePurchases12312016.csv'
--- CSV HEADER ENCODING 'UTF8';
+COPY staging.stg_invoice_purchases
+FROM '/absolute/path/to/data/raw/InvoicePurchases12312016.csv'
+CSV HEADER ENCODING 'UTF8';
 
 
 DROP TABLE IF EXISTS staging.stg_vendor_prices;
@@ -118,6 +118,6 @@ CREATE TABLE staging.stg_vendor_prices (
     "VendorNumber"      INT,
     "VendorName"        VARCHAR(200)
 );
--- COPY staging.stg_vendor_prices
--- FROM '/absolute/path/to/data/raw/2017PurchasePricesDec.csv'
--- CSV HEADER ENCODING 'UTF8';
+COPY staging.stg_vendor_prices
+FROM '/absolute/path/to/data/raw/2017PurchasePricesDec.csv'
+CSV HEADER ENCODING 'UTF8';
