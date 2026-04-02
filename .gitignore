@@ -8,7 +8,7 @@ __pycache__/
 venv/
 env/
 ENV/
-03_env/
+04_env/
 
 # Environment files
 .env
@@ -36,7 +36,7 @@ dist/
 *.egg-info/
 
 # Local generated data
-data/*.csv
+data/raw/
 data/*.parquet
 data/*.xlsx
 !data/.gitkeep
