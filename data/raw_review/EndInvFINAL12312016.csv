@@ -1,0 +1,11 @@
+"InventoryId","Store","City","Brand","Description","Size","onHand","Price","endDate"
+"1_HARDERSFIELD_58",1,"HARDERSFIELD",58,"Gekkeikan Black & Gold Sake","750mL",11,12.99,2016-12-31
+"1_HARDERSFIELD_62",1,"HARDERSFIELD",62,"Herradura Silver Tequila","750mL",7,36.99,2016-12-31
+"1_HARDERSFIELD_63",1,"HARDERSFIELD",63,"Herradura Reposado Tequila","750mL",7,38.99,2016-12-31
+"1_HARDERSFIELD_72",1,"HARDERSFIELD",72,"No. 3 London Dry Gin","750mL",4,34.99,2016-12-31
+"1_HARDERSFIELD_75",1,"HARDERSFIELD",75,"Three Olives Tomato Vodka","750mL",7,14.99,2016-12-31
+"1_HARDERSFIELD_77",1,"HARDERSFIELD",77,"Three Olives Espresso Vodka","750mL",18,14.99,2016-12-31
+"1_HARDERSFIELD_79",1,"HARDERSFIELD",79,"Three Olives Loopy Vodka","750mL",7,14.99,2016-12-31
+"1_HARDERSFIELD_115",1,"HARDERSFIELD",115,"Belvedere Vodka","Liter",35,27.99,2016-12-31
+"1_HARDERSFIELD_126",1,"HARDERSFIELD",126,"Grey Goose Vodka","Liter",36,29.99,2016-12-31
+"1_HARDERSFIELD_159",1,"HARDERSFIELD",159,"Glenmorangie Original VAP","750mL + 2/",8,34.99,2016-12-31
