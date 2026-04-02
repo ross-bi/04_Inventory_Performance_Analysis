@@ -1,11 +1,12 @@
 -- =============================================================
 -- 01_populate_dimensions.sql
--- Populates dimension tables from staging
--- dim_date is already populated in 02_create_dimensions.sql
+-- Populates dimension tables from staging.
+-- Run AFTER 00_data_quality_check.sql (no blocking errors).
+-- dim_date is pre-populated in 02_create_dimensions.sql.
 -- =============================================================
 
 -- ------------------------------------------------------------
--- dim_store  (from beg + end inventory union for full store list)
+-- dim_store  (union of beg + end inventory for complete list)
 -- ------------------------------------------------------------
 INSERT INTO warehouse.dim_store (store_id, city)
 SELECT DISTINCT store_id, city
@@ -18,7 +19,7 @@ ORDER BY store_id
 ON CONFLICT (store_id) DO UPDATE SET city = EXCLUDED.city;
 
 -- ------------------------------------------------------------
--- dim_vendor  (from purchase prices + purchases + sales)
+-- dim_vendor  (union from purchase_prices + purchases + sales)
 -- ------------------------------------------------------------
 INSERT INTO warehouse.dim_vendor (vendor_number, vendor_name)
 SELECT DISTINCT vendor_number, TRIM(vendor_name)
@@ -35,8 +36,8 @@ ON CONFLICT (vendor_number) DO UPDATE
     SET vendor_name = EXCLUDED.vendor_name;
 
 -- ------------------------------------------------------------
--- dim_product  (master = stg_purchase_prices, enriched with beg inv price)
--- classification_name: 1=Spirits, 2=Wine, 3=Beer, 4=Other
+-- dim_product  (master = stg_purchase_prices, fallback = beg_inv)
+-- classification_name: 1=Spirits  2=Wine  3=Beer  else=Other
 -- ------------------------------------------------------------
 INSERT INTO warehouse.dim_product (
     brand_id, description, size, volume_ml, classification,
@@ -47,7 +48,6 @@ SELECT
     pp.brand_id,
     TRIM(pp.description),
     TRIM(pp.size),
-    -- Extract numeric mL from volume text; fallback NULL
     NULLIF(REGEXP_REPLACE(pp.volume, '[^0-9]', '', 'g'), '')::INT  AS volume_ml,
     pp.classification,
     CASE pp.classification
@@ -66,11 +66,12 @@ SELECT
     TRIM(pp.vendor_name)
 FROM staging.stg_purchase_prices pp
 ON CONFLICT (brand_id) DO UPDATE
-    SET retail_price    = EXCLUDED.retail_price,
-        purchase_price  = EXCLUDED.purchase_price,
+    SET retail_price     = EXCLUDED.retail_price,
+        purchase_price   = EXCLUDED.purchase_price,
         gross_margin_pct = EXCLUDED.gross_margin_pct;
 
--- Add products that appear in inventory but not in purchase_prices
+-- Fallback: products in beg_inventory but missing from purchase_prices
+-- (purchase_price and gross_margin_pct will be NULL for these rows)
 INSERT INTO warehouse.dim_product (brand_id, description, size, retail_price)
 SELECT DISTINCT
     b.brand_id,
@@ -83,16 +84,28 @@ WHERE NOT EXISTS (
 )
 ON CONFLICT (brand_id) DO NOTHING;
 
--- Update avg_lead_time_days in dim_vendor after purchases are available
+-- ------------------------------------------------------------
+-- dim_vendor: back-fill avg_lead_time_days from stg_purchases
+-- FIX: po_date and receiving_date are now VARCHAR(20) in staging;
+--      must use TO_DATE() before computing date arithmetic.
+-- ------------------------------------------------------------
 UPDATE warehouse.dim_vendor dv
 SET avg_lead_time_days = sub.avg_lead
 FROM (
     SELECT
         vendor_number,
-        ROUND(AVG(receiving_date - po_date), 2) AS avg_lead
+        ROUND(
+            AVG(
+                TO_DATE(receiving_date, 'YYYY-MM-DD')
+                - TO_DATE(po_date,       'YYYY-MM-DD')
+            )::NUMERIC
+        , 2) AS avg_lead
     FROM staging.stg_purchases
-    WHERE receiving_date IS NOT NULL AND po_date IS NOT NULL
-      AND receiving_date >= po_date
+    WHERE receiving_date IS NOT NULL AND TRIM(receiving_date) <> ''
+      AND po_date        IS NOT NULL AND TRIM(po_date)        <> ''
+      -- only rows where receiving >= po (filter bad data)
+      AND TO_DATE(receiving_date, 'YYYY-MM-DD')
+          >= TO_DATE(po_date, 'YYYY-MM-DD')
     GROUP BY vendor_number
 ) sub
 WHERE dv.vendor_number = sub.vendor_number;
