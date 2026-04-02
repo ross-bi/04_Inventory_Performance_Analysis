@@ -119,5 +119,5 @@ CREATE TABLE staging.stg_vendor_prices (
     "VendorName"        VARCHAR(200)
 );
 -- COPY staging.stg_vendor_prices
--- FROM '/absolute/path/to/data/raw/Vendor_Purchase_Prices_Dec2017.csv'
+-- FROM '/absolute/path/to/data/raw/2017PurchasePricesDec.csv'
 -- CSV HEADER ENCODING 'UTF8';
