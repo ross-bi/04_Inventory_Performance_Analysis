@@ -1,8 +1,10 @@
 -- ============================================================
 -- FILE: sql/02_elt/01_load_raw.sql
 -- PURPOSE: Load CSV files into raw schema using PostgreSQL COPY
--- USAGE:   Run from psql with \i or adjust paths as needed
--- NOTE:    Update /path/to/data/raw/ to your local data folder
+-- USAGE:   Run from psql: \i sql/02_elt/01_load_raw.sql
+-- NOTE:    Replace /path/to/data/raw/ with your local folder path
+-- UPDATED: 2026-04-10 v3 - fix invoice_purchases column list to
+--          match true CSV order; approval as TEXT
 -- ============================================================
 
 -- Truncate before reload (idempotent)
@@ -13,7 +15,9 @@ TRUNCATE TABLE raw.end_inventory;
 TRUNCATE TABLE raw.invoice_purchases;
 TRUNCATE TABLE raw.purchase_prices;
 
--- Load Sales
+-- ---------------------------------------------------------
+-- 1. Sales
+-- ---------------------------------------------------------
 COPY raw.sales (
     inventory_id, store, brand, description, size,
     sales_quantity, sales_dollars, sales_price, sales_date,
@@ -27,7 +31,9 @@ WITH (
     NULL ''
 );
 
--- Load Purchases
+-- ---------------------------------------------------------
+-- 2. Purchases
+-- ---------------------------------------------------------
 COPY raw.purchases (
     inventory_id, store, brand, description, size,
     vendor_number, vendor_name, po_number, po_date,
@@ -42,7 +48,9 @@ WITH (
     NULL ''
 );
 
--- Load Beginning Inventory
+-- ---------------------------------------------------------
+-- 3. Beginning Inventory
+-- ---------------------------------------------------------
 COPY raw.beg_inventory (
     inventory_id, store, city, brand, description,
     size, on_hand, price, start_date
@@ -55,7 +63,9 @@ WITH (
     NULL ''
 );
 
--- Load Ending Inventory
+-- ---------------------------------------------------------
+-- 4. Ending Inventory
+-- ---------------------------------------------------------
 COPY raw.end_inventory (
     inventory_id, store, city, brand, description,
     size, on_hand, price, end_date
@@ -68,10 +78,15 @@ WITH (
     NULL ''
 );
 
--- Load Invoice Purchases
+-- ---------------------------------------------------------
+-- 5. Invoice Purchases
+-- TRUE CSV column order (verified from header):
+--   vendor_number, vendor_name, invoice_date, po_number,
+--   po_date, pay_date, quantity, dollars, freight, approval
+-- ---------------------------------------------------------
 COPY raw.invoice_purchases (
     vendor_number, vendor_name, invoice_date, po_number,
-    pay_date, quantity, dollars, freight, approval_status
+    po_date, pay_date, quantity, dollars, freight, approval
 )
 FROM '/path/to/data/raw/InvoicePurchases12312016.csv'
 WITH (
@@ -81,9 +96,12 @@ WITH (
     NULL ''
 );
 
--- Load Purchase Prices (2017 reference)
+-- ---------------------------------------------------------
+-- 6. Purchase Prices (2017 reference)
+-- ---------------------------------------------------------
 COPY raw.purchase_prices (
-    brand, description, price, size, volume, classification, purchase_price
+    brand, description, price, size, volume,
+    classification, purchase_price, vendor_number, vendor_name
 )
 FROM '/path/to/data/raw/2017PurchasePricesDec.csv'
 WITH (
@@ -93,16 +111,18 @@ WITH (
     NULL ''
 );
 
--- Verify row counts
-SELECT 'raw.sales'             AS table_name, COUNT(*) AS row_count FROM raw.sales
+-- ---------------------------------------------------------
+-- Verification: row count per table
+-- ---------------------------------------------------------
+SELECT 'raw.sales'               AS table_name, COUNT(*) AS row_count FROM raw.sales
 UNION ALL
-SELECT 'raw.purchases',         COUNT(*) FROM raw.purchases
+SELECT 'raw.purchases',           COUNT(*) FROM raw.purchases
 UNION ALL
-SELECT 'raw.beg_inventory',     COUNT(*) FROM raw.beg_inventory
+SELECT 'raw.beg_inventory',       COUNT(*) FROM raw.beg_inventory
 UNION ALL
-SELECT 'raw.end_inventory',     COUNT(*) FROM raw.end_inventory
+SELECT 'raw.end_inventory',       COUNT(*) FROM raw.end_inventory
 UNION ALL
-SELECT 'raw.invoice_purchases', COUNT(*) FROM raw.invoice_purchases
+SELECT 'raw.invoice_purchases',   COUNT(*) FROM raw.invoice_purchases
 UNION ALL
-SELECT 'raw.purchase_prices',   COUNT(*) FROM raw.purchase_prices
+SELECT 'raw.purchase_prices',     COUNT(*) FROM raw.purchase_prices
 ORDER BY table_name;
