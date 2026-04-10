@@ -19,7 +19,7 @@ COPY raw.sales (
     sales_quantity, sales_dollars, sales_price, sales_date,
     volume, classification, excise_tax, vendor_no, vendor_name
 )
-FROM '/path/to/data/raw/SalesFINAL12312016.csv'
+FROM 'C:/Program Files/PostgreSQL/18/data/pwc_stock/SalesFINAL12312016.csv'
 WITH (
     FORMAT CSV,
     HEADER TRUE,
@@ -34,7 +34,7 @@ COPY raw.purchases (
     receiving_date, invoice_date, pay_date,
     purchase_price, quantity, dollars, classification
 )
-FROM '/path/to/data/raw/PurchasesFINAL12312016.csv'
+FROM 'C:/Program Files/PostgreSQL/18/data/pwc_stock/PurchasesFINAL12312016.csv'
 WITH (
     FORMAT CSV,
     HEADER TRUE,
@@ -47,7 +47,7 @@ COPY raw.beg_inventory (
     inventory_id, store, city, brand, description,
     size, on_hand, price, start_date
 )
-FROM '/path/to/data/raw/BegInvFINAL12312016.csv'
+FROM 'C:/Program Files/PostgreSQL/18/data/pwc_stock/BegInvFINAL12312016.csv'
 WITH (
     FORMAT CSV,
     HEADER TRUE,
@@ -60,7 +60,7 @@ COPY raw.end_inventory (
     inventory_id, store, city, brand, description,
     size, on_hand, price, end_date
 )
-FROM '/path/to/data/raw/EndInvFINAL12312016.csv'
+FROM 'C:/Program Files/PostgreSQL/18/data/pwc_stock/EndInvFINAL12312016.csv'
 WITH (
     FORMAT CSV,
     HEADER TRUE,
@@ -73,7 +73,7 @@ COPY raw.invoice_purchases (
     vendor_number, vendor_name, invoice_date, po_number,
     pay_date, quantity, dollars, freight, approval_status
 )
-FROM '/path/to/data/raw/InvoicePurchases12312016.csv'
+FROM 'C:/Program Files/PostgreSQL/18/data/pwc_stock/InvoicePurchases12312016.csv'
 WITH (
     FORMAT CSV,
     HEADER TRUE,
@@ -85,7 +85,7 @@ WITH (
 COPY raw.purchase_prices (
     brand, description, price, size, volume, classification, purchase_price
 )
-FROM '/path/to/data/raw/2017PurchasePricesDec.csv'
+FROM 'C:/Program Files/PostgreSQL/18/data/pwc_stock/2017PurchasePricesDec.csv'
 WITH (
     FORMAT CSV,
     HEADER TRUE,
