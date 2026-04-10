@@ -4,6 +4,7 @@
 -- SOURCE: PwC x Kaggle Inventory Analysis Case Study
 -- AUTHOR: ross-bi
 -- DATE: 2026-04-10
+-- UPDATED: 2026-04-10 fix volume NUMERIC(8,2) - CSV contains decimals (e.g. 162.5)
 -- ============================================================
 
 CREATE SCHEMA IF NOT EXISTS raw;
@@ -12,6 +13,7 @@ CREATE SCHEMA IF NOT EXISTS raw;
 -- 1. raw.sales
 -- Source: SalesFINAL12312016.csv
 -- Grain: 1 row = 1 sales transaction (store x brand x date)
+-- NOTE: volume is NUMERIC(8,2) — raw data contains decimal mL values (e.g. 162.5)
 -- ---------------------------------------------------------
 DROP TABLE IF EXISTS raw.sales;
 CREATE TABLE raw.sales (
@@ -24,7 +26,7 @@ CREATE TABLE raw.sales (
     sales_dollars    NUMERIC(12,2),
     sales_price      NUMERIC(10,2),
     sales_date       DATE,
-    volume           INTEGER,        -- Volume in mL
+    volume           NUMERIC(8,2),   -- Volume in mL — DECIMAL: raw data has fractional values
     classification   INTEGER,        -- 1=Spirits, 2=Wine, 3=Beer
     excise_tax       NUMERIC(10,2),
     vendor_no        INTEGER,
@@ -119,6 +121,7 @@ CREATE TABLE raw.invoice_purchases (
 -- 6. raw.purchase_prices
 -- Source: 2017PurchasePricesDec.csv
 -- Grain: 1 row = 1 SKU reference price (2017 Dec)
+-- NOTE: volume NUMERIC(8,2) consistent with raw.sales
 -- ---------------------------------------------------------
 DROP TABLE IF EXISTS raw.purchase_prices;
 CREATE TABLE raw.purchase_prices (
@@ -126,8 +129,10 @@ CREATE TABLE raw.purchase_prices (
     description      TEXT,
     price            NUMERIC(10,2),
     size             TEXT,
-    volume           INTEGER,
+    volume           NUMERIC(8,2),   -- Decimal-safe, consistent with raw.sales
     classification   INTEGER,
     purchase_price   NUMERIC(10,2),
+    vendor_number    INTEGER,        -- Present in 2017PurchasePricesDec.csv
+    vendor_name      TEXT,
     _loaded_at       TIMESTAMP NOT NULL DEFAULT NOW()
 );
