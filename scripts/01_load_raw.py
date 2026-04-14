@@ -24,12 +24,12 @@ DB_URL = os.getenv(
 
 # Map: raw table name → CSV filename (place full CSVs in data/raw/)
 FILE_MAP = {
-    "raw_sales":              "SalesFINAL12312016.csv",
-    "raw_purchases":          "PurchasesFINAL12312016.csv",
-    "raw_beg_inventory":      "BegInvFINAL12312016.csv",
-    "raw_end_inventory":      "EndInvFINAL12312016.csv",
-    "raw_invoice_purchases":  "InvoicePurchases12312016.csv",
-    "raw_purchase_prices":    "2017PurchasePricesDec.csv",
+    "raw_sales":              "C:/Program Files/PostgreSQL/18/data/pwc_stock/SalesFINAL12312016.csv",
+    "raw_purchases":          "C:/Program Files/PostgreSQL/18/data/pwc_stock/PurchasesFINAL12312016.csv",
+    "raw_beg_inventory":      "C:/Program Files/PostgreSQL/18/data/pwc_stock/BegInvFINAL12312016.csv",
+    "raw_end_inventory":      "C:/Program Files/PostgreSQL/18/data/pwc_stock/EndInvFINAL12312016.csv",
+    "raw_invoice_purchases":  "C:/Program Files/PostgreSQL/18/data/pwc_stock/InvoicePurchases12312016.csv",
+    "raw_purchase_prices":    "C:/Program Files/PostgreSQL/18/data/pwc_stock/2017PurchasePricesDec.csv",
 }
 
 RAW_DATA_DIR = os.path.join(os.path.dirname(__file__), "..", "data", "raw")
@@ -51,12 +51,18 @@ def to_snake_case(col: str) -> str:
 
 def load_table(engine, table_name: str, csv_path: str) -> int:
     """Load one CSV into raw schema, return row count."""
+    
+    print(f"  -> Reading {table_name} from CSV...", end="", flush=True)
+    
     df = pd.read_csv(
         csv_path,
         encoding="utf-8-sig",   # handles BOM (\ufeff)
         dtype=str,               # load everything as TEXT — no implicit type coercion
         keep_default_na=False,   # keep empty strings as empty, not NaN
+        low_memory=False,        # 加上這行，避免型別推斷造成記憶體警告或卡頓
     )
+    
+    print(f" {len(df):,} rows found. Writing to database...", end="", flush=True)
 
     # Normalise column names
     df.columns = [to_snake_case(c) for c in df.columns]
@@ -73,6 +79,8 @@ def load_table(engine, table_name: str, csv_path: str) -> int:
         method="multi",
         chunksize=5000,
     )
+    
+    print(" Done.")
     return len(df)
 
 
