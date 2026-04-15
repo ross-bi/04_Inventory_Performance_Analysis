@@ -1,0 +1,4 @@
+"table_name","min_date","max_date","out_of_range"
+"raw_sales","2016-01-01","2016-12-31","0"
+"raw_purchases","2015-12-20","2016-12-23","0"
+"raw_invoice_purchases","2016-01-04","2017-01-10","140"
