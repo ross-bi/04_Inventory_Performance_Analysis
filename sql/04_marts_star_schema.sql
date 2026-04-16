@@ -67,7 +67,8 @@ SELECT
     
     MAX(p.retail_price)   AS default_retail_price,
     MAX(p.purchase_price) AS default_cost_price,
-    MAX(p.gross_margin_pct) AS default_gross_margin_pct
+    MAX(p.gross_margin_pct) AS default_gross_margin_pct,
+    abc_class VARCHAR(1) DEFAULT 'C'
 FROM staging.stg_purchase_prices p
 FULL OUTER JOIN (
     -- 預先聚合提升效能
@@ -108,6 +109,45 @@ LEFT JOIN marts.dim_vendor dv  ON s.vendor_number = dv.vendor_number;
 
 CREATE INDEX idx_fact_sales_product_sk ON marts.fact_sales(product_sk);
 CREATE INDEX idx_fact_sales_date       ON marts.fact_sales(sales_date);
+
+-- =========================================================================
+-- 後置處理 (Post-Processing): 計算靜態 ABC 分類並更新回 dim_product
+-- =========================================================================
+
+WITH product_revenue AS (
+    -- 1. 結算每個商品的總營收
+    SELECT 
+        product_sk,
+        SUM(sales_dollars) AS total_revenue
+    FROM marts.fact_sales
+    GROUP BY product_sk
+    HAVING SUM(sales_dollars) > 0  -- 排除 0 營收，讓它們保持預設的 'C'
+),
+revenue_ranking AS (
+    -- 2. 算累積營收與分母
+    SELECT 
+        product_sk,
+        total_revenue,
+        SUM(total_revenue) OVER (ORDER BY total_revenue DESC ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS cumulative_revenue,
+        SUM(total_revenue) OVER () AS grand_total_revenue
+    FROM product_revenue
+),
+abc_calculation AS (
+    -- 3. 判定 A, B, C 等級
+    SELECT 
+        product_sk,
+        CASE 
+            WHEN (cumulative_revenue / grand_total_revenue) <= 0.70 THEN 'A'
+            WHEN (cumulative_revenue / grand_total_revenue) <= 0.90 THEN 'B'
+            ELSE 'C'
+        END AS calculated_abc
+    FROM revenue_ranking
+)
+-- 4. 透過 JOIN CTE 的方式，將結果更新回 dim_product
+UPDATE marts.dim_product dp
+SET abc_class = ac.calculated_abc
+FROM abc_calculation ac
+WHERE dp.product_sk = ac.product_sk;
 
 -- ─────────────────────────────────────────────────────────
 -- 5. FACT: fact_inventory_snapshot
