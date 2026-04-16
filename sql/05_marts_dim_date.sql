@@ -1,5 +1,7 @@
 -- 建立 Calendar / Date Spine View（在 PostgreSQL 生成，讓 Power BI 直接匯入）
-CREATE OR REPLACE VIEW marts.dim_date AS
+DROP TABLE IF EXISTS marts.dim_date;
+
+CREATE TABLE marts.dim_date AS
 SELECT
     gs::DATE                                AS date_key,
     EXTRACT(YEAR FROM gs)::INT              AS year,
@@ -15,3 +17,5 @@ FROM generate_series(
     (SELECT MAX(sales_date) FROM marts.fact_sales),
     INTERVAL '1 day'
 ) gs;
+
+CREATE UNIQUE INDEX idx_dim_date_key ON marts.dim_date (date_key);
