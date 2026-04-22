@@ -1,0 +1,101 @@
+"product_sk","brand","description","size","volume_ml","classification","default_retail_price","default_cost_price","default_gross_margin_pct","abc_class"
+"6",68,"Luxardo Triplum Triple Sec","750mL","750.00",1,"24.99","18.93","24.25",NULL
+"14",89,"Ty Ku Soju Vodka","750mL","750.00",1,"18.99","14.39","24.22",NULL
+"15",93,"Writer's Block Syrah","750mL","750.00",1,"15.99","12.40","22.45",NULL
+"43",145,"Smirnoff Cranberry Vodka","1000mL","1000.00",1,"14.49","11.50","20.63",NULL
+"82",215,"DeKuyper Alabama Slammer RTD","750mL","750.00",1,"10.99","8.65","21.29",NULL
+"91",238,"Smirnoff Pear","1000mL","1000.00",1,"13.99","10.36","25.95",NULL
+"101",255,"Conch Republic Dark Rum","1000mL","1000.00",1,"7.29","5.48","24.83",NULL
+"103",259,"Don Q Cristal Rum","750mL","750.00",1,"8.99","6.97","22.47",NULL
+"127",291,"Wisers 18 Yr Old Canadian","750mL","750.00",1,"64.99","48.14","25.93",NULL
+"134",307,"Hennessy VS Cognac","200mL","200.00",1,"8.99","6.06","32.59",NULL
+"137",310,"Triple Eight Blueberry Vodka","750mL","750.00",1,"31.99","25.59","20.01",NULL
+"139",312,"Pinnacle Country Fair Cotton","750mL","750.00",1,"12.99","9.41","27.56",NULL
+"142",316,"Bols Pumpkin Smash","1000mL","1000.00",1,"6.99","5.30","24.18",NULL
+"150",333,"Hiram Walker Br Cr de Cacao","750mL","750.00",1,"7.29","5.28","27.57",NULL
+"155",349,"Fernet Branca Menta","750mL","750.00",1,"27.99","21.05","24.79",NULL
+"173",374,"Relska Vodka","1000mL","1000.00",1,"6.99","4.99","28.61",NULL
+"179",385,"Leopold GourmelAge Des Epic","750mL","750.00",1,"447.99","327.00","27.01",NULL
+"190",410,"Absolut Wild Tea","1000mL","1000.00",1,"21.99","14.81","32.65",NULL
+"195",422,"Old Weller Antique Bourbon","750mL","750.00",1,"21.99","17.59","20.01",NULL
+"208",445,"Fleischmanns Extra Dry Gin","1000mL","1000.00",1,"8.79","6.46","26.51",NULL
+"210",447,"Fleischmanns Royal Vodka Des","1000mL","1000.00",1,"6.99","5.26","24.75",NULL
+"223",489,"Tequila Rose Game of Love","750mL","750.00",1,"16.99","12.68","25.37",NULL
+"236",518,"Malibu Black Rum","1000mL","1000.00",1,"15.99","11.84","25.95",NULL
+"242",531,"Hiram Walker Gr Cr de Menthe","750mL","750.00",1,"7.29","5.56","23.73",NULL
+"246",537,"The Famous Grouse Gold RSV","750mL","750.00",1,"32.99","24.08","27.01",NULL
+"252",545,"Elderflower Rum","750mL","750.00",1,"36.99","27.60","25.39",NULL
+"257",550,"Tijuana Oro Tequila","1000mL","1000.00",1,"8.99","6.71","25.36",NULL
+"271",583,"Malibu Pineapple Rum","1000mL","1000.00",1,"16.99","12.22","28.08",NULL
+"275",588,"Luca Nico Malbec","750mL","750.00",2,"114.99","77.70","32.43",NULL
+"291",609,"Don Q Gold Rum","750mL","750.00",1,"10.99","8.39","23.66",NULL
+"296",617,"Crystal Head Rolling Stones","750mL","750.00",1,"49.99","36.49","27.01",NULL
+"300",633,"Wandering Poet Rihaku Sake","300mL","300.00",1,"14.49","11.32","21.88",NULL
+"304",638,"Moon On The Water Sake","300mL","300.00",1,"16.99","12.97","23.66",NULL
+"306",643,"Thatchers Organic Apple Spic","750mL","750.00",1,"9.99","7.57","24.22",NULL
+"308",647,"McCormick Orange Vodka","1000mL","1000.00",1,"6.99","5.18","25.89",NULL
+"314",654,"McCormick Citrus Vodka","1000mL","1000.00",1,"6.99","5.30","24.18",NULL
+"323",666,"McCormick Raspberry Vodka","1000mL","1000.00",1,"6.99","5.38","23.03",NULL
+"326",672,"Pinnacle Cherry Vodka","1750mL","1750.00",1,"21.99","16.92","23.06",NULL
+"334",690,"Thatchers Organic Blueberry","750mL","750.00",1,"21.99","16.53","24.83",NULL
+"357",741,"Catdaddy","750mL","750.00",1,"22.99","16.42","28.58",NULL
+"401",815,"Bacardi Wolf Berry","750mL","750.00",1,"10.99","8.52","22.47",NULL
+"405",820,"Hennessy VS Cognac","1000mL","1000.00",1,"39.99","25.54","36.13",NULL
+"473",894,"Tall Blond Vodka","1000mL","1000.00",1,"25.49","18.74","26.48",NULL
+"534",990,"Ethyl Alcohol 200 Proof","3750mL","3750.00",1,"134.49","105.07","21.88",NULL
+"573",1044,"Dry Sack Sherry +15 Yr Gift","750mL","750.00",2,"13.49","9.05","32.91",NULL
+"581",1057,"Russian Standard Glass Pack","750mL","750.00",1,"19.99","14.70","26.46",NULL
+"582",1058,"Old Forester Birthday 2015","750mL","750.00",1,"74.99","59.99","20.00",NULL
+"593",1069,"Spade&Bushel 10yr Irish Wsky","375mL","375.00",1,"39.99","29.84","25.38",NULL
+"595",1071,"Straw Boys Vodka","750mL","750.00",1,"19.99","14.70","26.46",NULL
+"597",1073,"Straw Boys Poitin","750mL","750.00",1,"34.99","25.73","26.46",NULL
+"598",1074,"Brothership Whiskey","750mL","750.00",1,"49.99","39.99","20.00",NULL
+"610",1092,"Ciroc Amaretto Vodka","200mL","200.00",1,"8.99","7.02","21.91",NULL
+"623",1124,"Manchester Conn Wild Turkey","750mL","750.00",1,"54.99","43.64","20.64",NULL
+"634",1149,"Crown Royal Regal Apple","375mL","375.00",1,"14.99","11.62","22.48",NULL
+"635",1150,"Crown Royal Vanilla","1750mL","1750.00",1,"46.99","34.55","26.47",NULL
+"636",1152,"Captain Morgan Loco Nut Rum","750mL","750.00",1,"16.99","13.38","21.25",NULL
+"638",1157,"Bailey's Almande-Irish Cream","750mL","750.00",1,"21.99","17.31","21.28",NULL
+"640",1162,"Campeon Reposado Tequila","750mL","750.00",1,"79.99","60.14","24.82",NULL
+"641",1163,"Absolut Lime Vodka","750mL","750.00",1,"19.99","14.38","28.06",NULL
+"652",1187,"Kahlua Gingerbread","750mL","750.00",1,"19.99","14.92","25.36",NULL
+"660",1213,"Evan Williams Pepp/Choc Nog","750mL","750.00",1,"6.99","5.59","20.03",NULL
+"665",1222,"Glen Master Bowmore 14yr Old","750mL","750.00",1,"69.99","53.43","23.66",NULL
+"668",1227,"Glen Master Longmorn 14 Yr","750mL","750.00",1,"69.99","52.23","25.38",NULL
+"674",1234,"Woodford Rsv Manchester Club","1000mL","1000.00",1,"45.99","35.11","23.66",NULL
+"700",1275,"Sam Houston Whiskey","750mL","750.00",1,"24.99","19.37","22.49",NULL
+"707",1292,"Jack Daniels Holiday 2014","750mL","750.00",1,"59.99","43.79","27.00",NULL
+"712",1299,"Firefly Moonshine 4/200 Pack","200mL 4 Pk","200.00",1,"19.99","15.03","24.81",NULL
+"721",1337,"Pinnacle Vodka VAP","750mL","750.00",1,"10.99","7.96","27.57",NULL
+"736",1363,"Red Stag Honey Tea Bourbon","750mL","750.00",1,"13.99","11.02","21.23",NULL
+"770",1448,"Jack Daniels Honey Gift Pak","750mL","750.00",1,"25.99","17.18","33.90",NULL
+"714",1304,"Jeremiah Weed Sarsaparilla","750mL","750.00",1,"10.99","8.33","24.20","C"
+"818",1679,"Ch d'Yquem Sauturnes","375mL","375.00",2,"199.99","135.13","32.43",NULL
+"829",1719,"Casa Noble Alta Belleza","750mL","750.00",1,"1199.99","923.07","23.08",NULL
+"864",1806,"Ladies Shoe Vodka","375mL","375.00",1,"29.99","22.89","23.67",NULL
+"918",1974,"Breaking & Entering Bourbon","750mL","750.00",1,"37.99","29.91","21.27",NULL
+"866",1812,"Booker's Rye","750mL","750.00",1,"299.99","225.56","24.81","B"
+"933",1998,"Flor de Cana Extra Dry Rum","750mL","750.00",1,"15.99","11.93","25.39",NULL
+"947",2020,"Wild Turkey Spiced","750mL","750.00",1,"13.99","10.84","22.52",NULL
+"948",2022,"Camarena Reposado Tequila","750mL","750.00",1,"14.99","11.27","24.82",NULL
+"949",2023,"Capt Morgan 1671 Ltd Edition","750mL","750.00",1,"19.99","15.99","20.01",NULL
+"976",2053,"Silo White Whiskey","375mL","375.00",1,"25.49","18.88","25.93",NULL
+"985",2066,"Kuhl Cherry Vodka","750mL","750.00",1,"11.99","8.69","27.52",NULL
+"1030",2126,"Kilchoman Sanaig Whiskey","750mL","750.00",1,"74.99","53.56","28.58",NULL
+"1073",2179,"McClelland Speyside Scotch","1750mL","1750.00",1,"35.99","25.89","28.06",NULL
+"1074",2180,"Stirk's Small Batch Gin","750mL","750.00",1,"39.99","30.53","23.66",NULL
+"1106",2221,"Tamdhu 10Yr Speyside Whiskey","750mL","750.00",1,"68.99","53.48","22.48",NULL
+"1111",2234,"Sugar Island Spiced Rum","750mL","750.00",1,"21.99","14.95","32.01",NULL
+"1120",2243,"KFB Honey Bourbon","750mL","750.00",1,"12.99","9.48","27.02",NULL
+"1132",2256,"Tamdhu Batch Speyside Whisky","750mL","750.00",1,"99.99","72.46","27.53",NULL
+"1137",2264,"WhistlePig 10Yr Common Man B","750mL","750.00",1,"75.99","57.14","24.81",NULL
+"1151",2297,"McIvor Finest Scotch Whiskey","750mL","750.00",1,"11.99","8.69","27.52",NULL
+"1170",2343,"Boss Hog WhistlePig 12 Yr","750mL","750.00",1,"189.99","146.15","23.07",NULL
+"1179",2363,"Sea Hagg Poitin White Whisky","750mL","750.00",1,"27.99","22.21","20.65",NULL
+"1186",2380,"Paddy Bee Sting","750mL","750.00",1,"15.99","12.40","22.45",NULL
+"1193",2399,"Paddy Devil's Apple Irish Wh","750mL","750.00",1,"15.99","12.69","20.64",NULL
+"1218",2453,"Crown Royal Trio","50mL 3 Pk","50.00",1,"5.99","4.31","28.05",NULL
+"1267",2544,"Big Gin","750mL","750.00",1,"24.99","19.68","21.25",NULL
+"1293",2592,"Bison Ridge Whisky","1750mL","1750.00",1,"15.99","12.69","20.64",NULL
+"1295",2594,"Slane Castle Irish Whiskey","750mL","750.00",1,"24.99","19.52","21.89",NULL
+"1300",2601,"Greenall's Original Gin","1750mL","1750.00",1,"19.99","15.50","22.46",NULL
