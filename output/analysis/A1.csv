@@ -1,0 +1,6 @@
+"table_name","row_count"
+"fact_sales","12825363"
+"fact_inventory_snapshot","431018"
+"dim_product","12261"
+"dim_store","80"
+"dim_vendor","132"
