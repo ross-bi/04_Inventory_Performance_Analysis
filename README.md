@@ -57,11 +57,8 @@ CSV Files
 ### 星型架構（Star Schema）
 
 ```
-              dim_date
-                 │
-dim_vendor ── fact_inventory_movement ── dim_product
-                 │
-              dim_store
+
+
 ```
 
 | 資料表 | 類型 | 說明 |
@@ -138,13 +135,9 @@ python -u scripts/01_load_raw.py
 
 ---
 
-## 📊 Power BI 儀表板（即將新增）
+## 📊 Power BI 儀表板
 
-- Inventory Turnover by Product / Store
-- DSI Trend（月趨勢）
-- Stockout Risk Heatmap
-- Overstock % by Category
-- Reorder Point Alert Table
+
 
 ---
 
