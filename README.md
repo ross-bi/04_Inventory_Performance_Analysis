@@ -421,6 +421,7 @@ Dashboard PDF export: [`powerbi/dashboard.pdf`](./powerbi/dashboard.pdf)
 | B | 2,101 | 17.14% | 15% |
 | C | 7,561 | 61.67% | 5% |
 | Unclassified | 1,024 | 8.35% | — |
+
 *sourced from `output/analysis/C1.csv
 
 ### Top 5 Revenue Products (Class A)
@@ -432,6 +433,7 @@ Dashboard PDF export: [`powerbi/dashboard.pdf`](./powerbi/dashboard.pdf)
 | 3 | Absolut 80 Proof | $4,538,121 | $24.48 |
 | 4 | Capt Morgan Spiced Rum | $4,475,973 | $22.83 |
 | 5 | Ketel One Vodka | $4,223,108 | $31.42 |
+
 *sourced from `output/analysis/C2.csv
 
 ### Inventory Value Movement (2016)
@@ -443,6 +445,7 @@ Dashboard PDF export: [`powerbi/dashboard.pdf`](./powerbi/dashboard.pdf)
 | Inventory Growth | **+$11,651,071 (+17.1%)** | Stock grew faster than sales — over-purchasing signal |
 | Total COGS | $313,385,300 | Estimated cost of goods sold across 12.8M transactions |
 | Total Sales Revenue | $452,062,952 | Full-year 2016 net revenue |
+
 *sourced from `output/analysis/A3.csv
 
 > Ending inventory grew 17.1% year-over-year despite no evidence of equivalent demand growth.
@@ -457,6 +460,7 @@ Dashboard PDF export: [`powerbi/dashboard.pdf`](./powerbi/dashboard.pdf)
 | Stockout Positions (qty = 0) | 7,230 | **3.22%** | Below 5% target ✅ |
 | Dead Stock Positions (zero sales, full year 2016) | 5,755 | **2.56%** | 77,785 units of stranded inventory |
 | Dead Stock Units | 77,785 | — | Capital tied up with no demand signal |
+
 *sourced from `output/analysis/B2.csv
 
 ---
