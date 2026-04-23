@@ -1,3 +1,7 @@
+[![繁體中文](https://img.shields.io/badge/繁體中文-點擊查看-blue?style=for-the-badge)](README.zh-TW.md)
+&nbsp;&nbsp;
+[![简体中文](https://img.shields.io/badge/简体中文-点击查看-blue?style=for-the-badge)](README.zh-CN.md)
+
 # Inventory Performance Analysis
 
 **PostgreSQL · Power BI · Python · SQL**
