@@ -270,29 +270,116 @@ FROM abc_labels al WHERE dp.product_sk = al.product_sk;
 
 ## 6. Power BI Dashboard (3 Pages)
 
-### Page 1: Inventory Overview
-<img src="powerbi/screenshots/Page1.png" alt="Inventory Overview Dashboard" width="100%">
+### Page 1: Executive Overview
+<img src="powerbi/screenshots/Page1.png" alt="Executive Overview Dashboard" width="100%">
 
-- **KPI Cards**: Total Revenue ($452M), Inventory Turnover (4.24x), DSI (86 days), Stockout Rate (3.22%)
-- **Monthly Revenue Trend**: Full-year 2016 sales trend by month (peak: Dec $52.3M; trough: Feb $28.9M)
-- **Top 10 Stores Bar Chart**: Revenue ranking across 80 stores (top store: Doncaster #76, $25.5M)
-- **ABC Class Donut**: SKU distribution — A: 12.85% / B: 17.14% / C: 61.67% / Unclassified: 8.35%
+**KPI Cards (top row)**
+- **Inventory Turnover — 4.24x**: Annual stock turnover calculated as COGS ÷ Average Inventory
+  (beginning + ending ÷ 2). Benchmark for liquor retail is 4–6x; result is within healthy range.
+- **Days Sales of Inventory (DSI) — 86 days**: Derived as 365 ÷ Inventory Turnover. Indicates
+  ~3 months of stock on hand across all stores.
+- **Stockout Rate — 3.22%**: Proportion of ending-inventory SKU-store positions where
+  quantity_on_hand = 0. Below the 5% target threshold.
+- **Dead Stock % of Total Inventory — 1.85%**: Share of ending inventory value tied to SKUs
+  with zero sales in the past 90 days. Threshold annotation set at 5.0%.
 
-### Page 2: ABC & Product Analysis
-<img src="powerbi/screenshots/Page2.png" alt="ABC Product Analysis Dashboard" width="100%">
+**Stockout Rate by Store (Clustered Column Chart)**
+Displays Stockout Rate for each store, sorted descending. Store 46 shows a near-100%
+stockout rate, far exceeding all other stores, signalling a critical replenishment failure.
+Most stores cluster near 0–5%, confirming the aggregate rate is driven by a small number
+of outlier stores.
 
-- **ABC Classification Table**: Product-level revenue, quantity, and class breakdown
-- **Top SKU Revenue Bar Chart**: Highest-revenue products with gross margin overlay
-- **Gross Margin Distribution**: Class A avg 31.69%; Class B avg 33.28%; Class C avg 33.81%
+**Monthly Revenue vs COGS (Dual-Line Chart)**
+Full-year 2016 monthly trend showing Total Revenue (teal) and Total COGS (orange) side by
+side. Revenue peaks in July (~$49M) and December (~$52M), with the annual trough in
+February (~$29M). The consistent gap between the two lines reflects a stable gross margin
+across all 12 months.
+
+**Dead Stock by ABC (Horizontal Bar Chart)**
+Compares Dead Stock Value (90 Days) across ABC classes. Class C dominates at ~$1.0M,
+followed by Unclassified at ~$0.5M, while Class B is minimal. Confirms that slow-moving
+long-tail SKUs are the primary source of stranded inventory capital.
+
+**Store Performance by ABC / Unclassified Segment (Matrix)**
+Drillable matrix with rows: Store Number → ABC Class Display. Columns: Total Revenue,
+Ending Inventory Value, Inventory Turnover, Days Sales of Inventory (DSI), Stockout Rate.
+Conditional formatting highlights underperforming cells (e.g. Store 76 Unclassified shows
+DSI = 232 days in amber, Stockout Rate = 25.53%). Enables rapid identification of which
+store–segment combinations require immediate attention.
+
+### Page 2: Inventory Risk Analysis
+<img src="powerbi/screenshots/Page2.png" alt="Inventory Risk Analysis Dashboard" width="100%">
+
+**KPI Cards (top row)**
+- **Dead Stock Value (90 Days) — $1.47M**: Total ending inventory value for SKU-store
+  positions with zero sales in the trailing 90 days (Oct–Dec 2016).
+- **Dead Stock SKU Count — 591**: Number of distinct SKUs flagged as dead stock across
+  all stores.
+- **Out of Stock Records — 13K**: Count of ending-inventory snapshot records where
+  quantity_on_hand ≤ 0, representing confirmed stockout positions.
+
+**Stockout Rate vs Dead Stock % — Store Risk Quadrant (Scatter Chart)**
+Each bubble represents one store; bubble size encodes Ending Inventory Value. X-axis =
+Stockout Rate; Y-axis = Dead Stock % of Total Inventory. Reference lines divide the chart
+into four quadrants (vertical: Stockout Rate = 5%; horizontal: Dead Stock % = 3%).
+Stores in the upper-right quadrant face simultaneous high stockout and high dead stock —
+the most critical management risk. Most stores cluster in the lower-left (healthy zone),
+while a handful of outliers in the upper regions warrant targeted intervention.
+
+**Dead Stock Value (90 Days) by Store Number (Horizontal Bar Chart)**
+Ranks stores by dead stock exposure. Store 50 leads at ~$0.47M, followed by Store 69
+(~$0.40M) and Store 34 (~$0.35M). Top 5 stores account for a disproportionate share of
+total dead stock value, enabling focused markdown or clearance decisions.
+
+**Risk Detail Table**
+Row-level breakdown sorted by Dead Stock Value descending. Columns: Store Number, Brand,
+ABC Class Display, Current Stock Qty, Sales Qty Last 90 Days, Dead Stock Value (90 Days),
+Inventory Status, Stock Record Status, SKU Lifecycle Status.
+- **Inventory Status** (🟠 Dead Stock / 🔴 Out of Stock / 🟢 Healthy) — flags each
+  position's risk category.
+- **Stock Record Status** (Has Snapshot / ⚠️ No Snapshot Has Sales) — identifies data
+  coverage gaps where sales exist but no ending inventory record is present.
+- **SKU Lifecycle Status** (Stable / New Introduction / Sold Out) — classifies each
+  brand-store combination by its beginning vs ending snapshot pattern.
+  Top rows show Class B/C SKUs at stores 50, 76, 34, 69 with Dead Stock Value ranging
+  from ~$10K to ~$20K per position.
 
 
-### Page 3: Inventory Health
-<img src="powerbi/screenshots/Page3.png" alt="Inventory Health Dashboard" width="100%">
+### Page 3: Replenishment & ABC Prioritization
+<img src="powerbi/screenshots/Page3.png" alt="Replenishment & ABC Prioritization Dashboard" width="100%">
 
-- **Stockout Map / Table**: 7,230 SKU-store positions with zero ending inventory (3.22% of 224,489 positions)
-- **Dead Stock Analysis**: 5,755 SKU-store positions hold inventory with zero 2016 sales (77,785 units stranded)
-- **Beginning vs Ending Inventory**: Beg value $68.1M → End value $79.7M (+17.1% growth)
-- **Reorder Point Reference**: Products approaching reorder threshold
+**KPI Cards (top row)**
+- **Reorder SKU Count — 2,639**: Total number of distinct SKUs currently at or below their
+  Reorder Point (Reorder Alert = "🟡 Reorder Now"), requiring immediate replenishment action.
+- **Avg Daily Sales Qty — 89.94K**: Portfolio-wide average units sold per day, used as the
+  demand input for Reorder Point and Safety Stock calculations.
+- **Ending Inventory Value — $79.70M**: Total ending inventory value across all stores,
+  providing context for the scale of inventory at risk.
+
+**Stock vs ROP Gap by Brand (Horizontal Bar Chart)**
+Plots Current Stock Qty minus Reorder Point Qty for each store-brand combination. Positive
+values (right of zero) indicate adequate buffer; negative values (left of zero) signal
+that stock has already fallen below the reorder threshold. Store 46, Brand 381 shows the
+largest positive gap (~+250K), while several brands on the left show negative gaps requiring
+urgent action. Chart axis Y shows store_number, enabling store-level drill-down.
+
+**Reorder SKU Count by ABC Class Display (Clustered Column Chart)**
+Compares the number of SKUs requiring reorder across ABC classes. Class C dominates at
+~2,500+ SKUs, reflecting the large long-tail catalogue. Class B and A have markedly fewer
+reorder-flagged SKUs, consistent with their higher velocity and more active replenishment
+management. Highlights that long-tail C-class inventory management is the primary
+operational burden.
+
+**Replenishment Prioritization Matrix — Sorted by Urgency (Matrix)**
+Drillable matrix with hierarchy: ABC Priority Group → Brand → Store Number. Sorted by
+Reorder Alert urgency (Out of Stock → Reorder Now → Low Stock → OK). Columns:
+Current Stock Qty, Avg Daily Sales Qty, Safety Stock Qty, Reorder Point Qty, Reorder Alert,
+Days of Stock Remaining, Stock vs ROP Gap.
+Top rows show A-Critical brand 381 across multiple stores all flagged 🔴 Out of Stock with
+Current Stock = 0.00, Days of Stock Remaining = 0.00, and Stock vs ROP Gap ranging from
+−19 to −51 — confirming these as the highest-priority replenishment actions.
+Conditional formatting on Stock vs ROP Gap renders negative values in red to surface the
+most critical shortfalls at a glance.
 
 > **Design Note — `dim_vendor` excluded from dashboard slicers:**
 > `dim_vendor` is modelled and connected to `fact_sales` in PostgreSQL and Power BI.
