@@ -342,9 +342,9 @@ Dashboard PDF export: [`powerbi/dashboard.pdf`](./powerbi/dashboard.pdf)
 
 ## Business Recommendations
 
-1. **Protect Class A SKU availability — especially top 5 products** — 1,575 SKUs (12.85% of catalogue) generate 80% of $452M revenue. Jack Daniels No 7 ($5.1M) and Tito's Vodka ($4.8M) alone represent over 2% of total revenue each. A single week of stockout on these items costs an estimated $98K–$130K in lost sales. Implement automated reorder triggers at 2× average weekly velocity.
+1. **Protect Class A SKU availability — especially top 5 products** — 1,575 SKUs (12.85% of catalogue) generate 80% of $452M revenue. Jack Daniels No 7 ($5.1M) and Tito's Vodka ($4.8M) alone represent over 2% of total revenue each. At 2016 weekly run-rates, a single week of stockout on Jack Daniels No 7 alone represents ~$98K in lost sales; Tito's Handmade Vodka adds another ~$93K — together ~$191K/week at risk. Implement automated reorder triggers at 2× average weekly velocity.
 
-2. **Clear 77,785 units of dead stock through promotions or vendor returns** — 5,755 SKU-store positions (2.56%) hold unsold inventory as of year-end. At an average cost price implied by the 31–34% margin structure, this represents approximately $1.5–2M in tied-up working capital. Prioritise 20–30% clearance discounts for C-class dead stock; negotiate vendor credit for A/B-class overstock.
+2. **Clear 77,785 units of dead stock through promotions or vendor returns** — 5,755 SKU-store positions (2.56%) hold unsold inventory as of year-end. Assuming an average cost of ~$19–25/unit for stranded items (consistent with the 31–34% margin structure across mid-range SKUs), this represents approximately $1.5–2M in tied-up working capital. Prioritise 20–30% clearance discounts for C-class dead stock; negotiate vendor credit for A/B-class overstock.
 
 3. **Reduce DSI from 86 days toward the 60–70 day range** — the current 86-day DSI is above the efficient liquor retail target. With ending inventory at $79.7M (+17.1% vs beginning), inventory growth outpaced sales growth. Focus purchase order reductions on the 7,561 C-class SKUs, which contribute only 5% of revenue but represent 61.67% of the product catalogue.
 
