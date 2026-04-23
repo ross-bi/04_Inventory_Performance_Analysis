@@ -291,7 +291,7 @@ of outlier stores.
 
 **Monthly Revenue vs COGS (Dual-Line Chart)**
 Full-year 2016 monthly trend showing Total Revenue (teal) and Total COGS (orange) side by
-side. Revenue peaks in July (~$49M) and December (~$52M), with the annual trough in
+side. Revenue peaks in July (~ $49M) and December (~ $52M), with the annual trough in
 February (~$29M). The consistent gap between the two lines reflects a stable gross margin
 across all 12 months.
 
@@ -327,8 +327,8 @@ the most critical management risk. Most stores cluster in the lower-left (health
 while a handful of outliers in the upper regions warrant targeted intervention.
 
 **Dead Stock Value (90 Days) by Store Number (Horizontal Bar Chart)**
-Ranks stores by dead stock exposure. Store 50 leads at ~$0.47M, followed by Store 69
-(~$0.40M) and Store 34 (~$0.35M). Top 5 stores account for a disproportionate share of
+Ranks stores by dead stock exposure. Store 50 leads at ~ $0.52M, followed by Store 69
+(~ $0.44M) and Store 34 (~ $0.42M). Top 5 stores account for a disproportionate share of
 total dead stock value, enabling focused markdown or clearance decisions.
 
 **Risk Detail Table**
