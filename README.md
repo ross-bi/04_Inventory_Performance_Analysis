@@ -148,6 +148,9 @@ erDiagram
     dim_vendor  ||--o{ fact_sales : "supplied by"
     dim_product ||--o{ fact_inventory_snapshot : "stocked as"
     dim_store   ||--o{ fact_inventory_snapshot : "held at"
+    dim_date ||--o{ fact_sales
+    dim_date ||--o{ fact_inventory_snapshot
+
 ```
 
 ### Table Descriptions
@@ -431,24 +434,10 @@ The full file must be downloaded from the [PwC source](https://www.pwc.com/us/en
 │   ├── 04_marts_star_schema.sql      # Star schema + static ABC classification
 │   ├── 05_marts_dim_date.sql         # Date dimension
 │   └── analysis/                     # KPI & business analysis queries
-│       ├── A. overview & Inventory Turnover & DSI.sql
-│       ├── B. Stockout Rate & Overstock (Dead Stock).sql
-│       ├── C. ABC Classification Distribution.sql
-│       └── D. Top Vendors & Monthly Sales Trend.sql
 ├── output/
 │   ├── mart_review/                  # 100-row previews of mart tables
 │   ├── sql.02_validate_raw/          # Validation query outputs (CSV)
 │   └── analysis/                     # KPI analysis query outputs (CSV)
-│       ├── A1.csv                    # Mart row counts
-│       ├── A2.csv                    # Revenue & date range summary
-│       ├── A3.csv                    # Inventory Turnover & DSI
-│       ├── B1.csv                    # Stockout rate
-│       ├── B2.csv                    # Dead stock count & %
-│       ├── C1.csv                    # ABC classification distribution
-│       ├── C2.csv                    # Top 10 products by revenue
-│       ├── D1.csv                    # Top 10 vendors by revenue
-│       ├── D2.csv                    # Monthly revenue trend
-│       └── D3.csv                    # Top 10 stores by revenue
 ├── powerbi/
 │   ├── dashboard.pdf                 # Dashboard PDF export
 │   └── screenshots/                  # Page1.png / Page2.png / Page3.png
