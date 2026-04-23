@@ -317,6 +317,15 @@ store–segment combinations require immediate attention.
   all stores.
 - **Out of Stock Records — 13K**: Count of ending-inventory snapshot records where
   quantity_on_hand ≤ 0, representing confirmed stockout positions.
+  > **Note — Dead Stock metric definitions differ between SQL analysis and Power BI dashboard:**
+> The SQL analysis in `Key Findings` (Section 7) reports **5,755 positions / 77,785 units**
+> of dead stock, defined as SKU-store positions with **zero sales across the full year 2016**
+> (static query against `fact_sales` + `fact_inventory_snapshot`).
+> The Power BI KPI cards above report **$1.47M / 591 SKUs**, defined as positions with
+> **zero sales in the trailing 90 days (Oct–Dec 2016 only)** — a rolling DAX measure
+> intentionally designed to surface actionable near-term clearance candidates.
+> Both metrics are correct; they answer different business questions:
+> SQL = full-year exposure audit; Power BI = actionable 90-day clearance list.
 
 **Stockout Rate vs Dead Stock % — Store Risk Quadrant (Scatter Chart)**
 Each bubble represents one store; bubble size encodes Ending Inventory Value. X-axis =
@@ -402,7 +411,7 @@ Dashboard PDF export: [`powerbi/dashboard.pdf`](./powerbi/dashboard.pdf)
 | Inventory Turnover | 4.24x | Within benchmark range (4–6x) for liquor retail; slight room for improvement |
 | DSI | 86 days | ~3 months of stock on hand; C-class SKUs likely dragging this higher |
 | Stockout Rate | 3.22% | Below 5% target — healthy supply coverage overall |
-| Dead Stock % | 2.56% | 5,755 positions / 77,785 units with zero 2016 sales; capital tied up unnecessarily |
+| Dead Stock % | 2.56% | 5,755 positions / 77,785 units with **zero sales across full year 2016** (SQL static audit). Power BI dashboard reports $1.47M / 591 SKUs on a **rolling 90-day window** — see note in Section 6 Page 2. |
 
 ### ABC Classification
 
