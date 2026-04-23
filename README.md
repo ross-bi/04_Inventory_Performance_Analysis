@@ -148,8 +148,8 @@ erDiagram
     dim_vendor  ||--o{ fact_sales : "supplied by"
     dim_product ||--o{ fact_inventory_snapshot : "stocked as"
     dim_store   ||--o{ fact_inventory_snapshot : "held at"
-    dim_date ||--o{ fact_sales
-    dim_date ||--o{ fact_inventory_snapshot
+    dim_date    ||--o{ fact_sales : "sales_date"
+    dim_date    ||--o{ fact_inventory_snapshot : "snapshot_date"
 
 ```
 
