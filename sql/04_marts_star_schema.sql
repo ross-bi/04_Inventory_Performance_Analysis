@@ -25,6 +25,16 @@ DROP TABLE IF EXISTS marts.dim_store;
 
 -- ─────────────────────────────────────────────────────────
 -- 1. DIMENSION: dim_vendor
+--    Scope : dim_vendor connects to fact_sales ONLY via vendor_sk.
+--    Limitation : fact_inventory_snapshot records stock positions at
+--                 Store × Product × Date grain; vendor attribution
+--                 does not apply to inventory snapshots by design —
+--                 a single SKU can be supplied by multiple vendors,
+--                 and snapshot tables do not carry vendor_sk.
+--    Usage : Use dim_vendor for sales / procurement analysis only.
+--            It is intentionally excluded from all inventory dashboard
+--            pages in Power BI (Inventory Turnover, DSI, Stockout Rate,
+--            Dead Stock — all derived from fact_inventory_snapshot).
 -- ─────────────────────────────────────────────────────────
 CREATE TABLE marts.dim_vendor AS
 SELECT 

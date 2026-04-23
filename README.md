@@ -159,7 +159,7 @@ erDiagram
 |---|---|---|---|
 | `dim_product` | Dimension | 12,261 unique SKUs with brand, description, size, pricing | `abc_class` intentionally NULL at creation; back-filled after `fact_sales` via CTE UPDATE |
 | `dim_store` | Dimension | 80 stores with city names | City sourced from beg/end inventory; missing from sales table |
-| `dim_vendor` | Dimension | 132 vendors consolidated from 4 source tables | UNION of purchases, sales, invoices, and purchase prices |
+| `dim_vendor` | Dimension | 132 vendors consolidated from 4 source tables | UNION of purchases, sales, invoices, and purchase prices. **Connects to `fact_sales` only** — `fact_inventory_snapshot` records stock positions at Store × Product × Date grain and does not carry `vendor_sk` by design. Excluded from all Power BI dashboard slicers; vendor-level procurement analysis is planned as a future enhancement. |
 | `dim_date` | Dimension | Full 2016 calendar (366 days) | Year / Quarter / Month / Week derived fields for Power BI slicers |
 | `fact_sales` | Fact | 12,825,363 sales transaction rows | `estimated_cogs = sales_quantity × default_cost_price` |
 | `fact_inventory_snapshot` | Fact | BEGINNING + ENDING snapshot rows (431,018 total) | Two `snapshot_type` values enable single-table Turnover/DSI calculation |
@@ -253,7 +253,7 @@ FROM abc_labels al WHERE dp.product_sk = al.product_sk;
 | `analysis/A. overview & Inventory Turnover & DSI.sql` | KPI baseline analysis | Table row counts, revenue summary, and Turnover/DSI calculation |
 | `analysis/B. Stockout Rate & Overstock (Dead Stock).sql` | Inventory health | Stockout rate and dead stock % by SKU-store position |
 | `analysis/C. ABC Classification Distribution.sql` | ABC breakdown | SKU count, SKU%, and avg gross margin by A/B/C class |
-| `analysis/D. Top Vendors & Monthly Sales Trend.sql` | Commercial analysis | Top 10 vendors by revenue; monthly revenue and active-SKU trend |
+
 
 ### Data Validation Highlights (`02_validate_raw.sql`)
 
@@ -284,7 +284,7 @@ FROM abc_labels al WHERE dp.product_sk = al.product_sk;
 - **ABC Classification Table**: Product-level revenue, quantity, and class breakdown
 - **Top SKU Revenue Bar Chart**: Highest-revenue products with gross margin overlay
 - **Gross Margin Distribution**: Class A avg 31.69%; Class B avg 33.28%; Class C avg 33.81%
-- **Vendor Performance Matrix**: Revenue and SKU count per vendor (top: Diageo $68.7M, 415 SKUs)
+
 
 ### Page 3: Inventory Health
 <img src="powerbi/screenshots/Page3.png" alt="Inventory Health Dashboard" width="100%">
@@ -293,6 +293,14 @@ FROM abc_labels al WHERE dp.product_sk = al.product_sk;
 - **Dead Stock Analysis**: 5,755 SKU-store positions hold inventory with zero 2016 sales (77,785 units stranded)
 - **Beginning vs Ending Inventory**: Beg value $68.1M → End value $79.7M (+17.1% growth)
 - **Reorder Point Reference**: Products approaching reorder threshold
+
+> **Design Note — `dim_vendor` excluded from dashboard slicers:**
+> `dim_vendor` is modelled and connected to `fact_sales` in PostgreSQL and Power BI.
+> However, all five inventory KPIs (Inventory Turnover, DSI, Stockout Rate, Dead Stock %,
+> Reorder Point) are derived from `fact_inventory_snapshot`, which records stock positions
+> at **Store × Product × Date grain** and carries no `vendor_sk`.
+> A vendor slicer would be inert on inventory-focused pages — this exclusion is intentional,
+> not an omission. Vendor-level procurement analysis is planned as a future enhancement.
 
 Dashboard PDF export: [`powerbi/dashboard.pdf`](./powerbi/dashboard.pdf)
 
@@ -328,15 +336,7 @@ Dashboard PDF export: [`powerbi/dashboard.pdf`](./powerbi/dashboard.pdf)
 | 4 | Capt Morgan Spiced Rum | $4,475,973 | $22.83 |
 | 5 | Ketel One Vodka | $4,223,108 | $31.42 |
 
-### Top 5 Vendors by Revenue
 
-| Rank | Vendor | Revenue | SKU Count |
-|---|---|---|---|
-| 1 | DIAGEO NORTH AMERICA INC | $68,742,417 | 415 |
-| 2 | MARTIGNETTI COMPANIES | $41,047,306 | 1,495 |
-| 3 | PERNOD RICARD USA | $32,281,248 | 254 |
-| 4 | JIM BEAM BRANDS COMPANY | $31,906,321 | 389 |
-| 5 | BACARDI USA INC | $25,014,557 | 171 |
 
 ---
 
@@ -344,15 +344,14 @@ Dashboard PDF export: [`powerbi/dashboard.pdf`](./powerbi/dashboard.pdf)
 
 1. **Protect Class A SKU availability — especially top 5 products** — 1,575 SKUs (12.85% of catalogue) generate 80% of $452M revenue. Jack Daniels No 7 ($5.1M) and Tito's Vodka ($4.8M) alone represent over 2% of total revenue each. At 2016 weekly run-rates, a single week of stockout on Jack Daniels No 7 alone represents ~$98K in lost sales; Tito's Handmade Vodka adds another ~$93K — together ~$191K/week at risk. Implement automated reorder triggers at 2× average weekly velocity.
 
-2. **Clear 77,785 units of dead stock through promotions or vendor returns** — 5,755 SKU-store positions (2.56%) hold unsold inventory as of year-end. Assuming an average cost of ~$19–25/unit for stranded items (consistent with the 31–34% margin structure across mid-range SKUs), this represents approximately $1.5–2M in tied-up working capital. Prioritise 20–30% clearance discounts for C-class dead stock; negotiate vendor credit for A/B-class overstock.
 
-3. **Reduce DSI from 86 days toward the 60–70 day range** — the current 86-day DSI is above the efficient liquor retail target. With ending inventory at $79.7M (+17.1% vs beginning), inventory growth outpaced sales growth. Focus purchase order reductions on the 7,561 C-class SKUs, which contribute only 5% of revenue but represent 61.67% of the product catalogue.
 
-4. **Consolidate the long tail of C-class vendors** — 132 active vendors supply 12,261 SKUs, but Diageo and Martignetti together account for $109.8M (24.3% of total revenue). The top 10 vendors collectively cover the majority of Class A revenue. Rationalising the bottom 50+ vendors — who collectively supply low-velocity C-class SKUs — would reduce procurement overhead and improve negotiation leverage with strategic partners.
+2. **Reduce DSI from 86 days toward the 60–70 day range** — the current 86-day DSI is above the efficient liquor retail target. With ending inventory at $79.7M (+17.1% vs beginning), inventory growth outpaced sales growth. Focus purchase order reductions on the 7,561 C-class SKUs, which contribute only 5% of revenue but represent 61.67% of the product catalogue.
 
-5. **Investigate seasonal demand and pre-position stock ahead of peak months** — December ($52.3M) and July ($49.7M) are the two highest-revenue months, together representing 22.6% of annual sales. February ($28.9M) is the annual trough. A forward-buying strategy in November and June for Class A SKUs, combined with purchase freezes in January for C-class items, would reduce DSI while protecting availability during peaks.
 
-6. **Monitor the 3.22% stockout rate at store level** — while the aggregate rate is within target, Doncaster stores #76 and #73 (top 2 by revenue at $25.5M and $21.7M) likely have disproportionate impact if stocked out. Store-level drill-down in the Power BI Inventory Health page enables targeted replenishment prioritisation.
+3. **Investigate seasonal demand and pre-position stock ahead of peak months** — December ($52.3M) and July ($49.7M) are the two highest-revenue months, together representing 22.6% of annual sales. February ($28.9M) is the annual trough. A forward-buying strategy in November and June for Class A SKUs, combined with purchase freezes in January for C-class items, would reduce DSI while protecting availability during peaks.
+
+4. **Monitor the 3.22% stockout rate at store level** — while the aggregate rate is within target, Doncaster stores #76 and #73 (top 2 by revenue at $25.5M and $21.7M) likely have disproportionate impact if stocked out. Store-level drill-down in the Power BI Inventory Health page enables targeted replenishment prioritisation.
 
 ---
 
@@ -411,7 +410,6 @@ The full file must be downloaded from the [PwC source](https://www.pwc.com/us/en
    psql -f "sql/analysis/A. overview & Inventory Turnover & DSI.sql"
    psql -f "sql/analysis/B. Stockout Rate & Overstock (Dead Stock).sql"
    psql -f "sql/analysis/C. ABC Classification Distribution.sql"
-   psql -f "sql/analysis/D. Top Vendors & Monthly Sales Trend.sql"
    ```
 6. Open Power BI Desktop, connect to PostgreSQL `marts` schema, refresh data
 
