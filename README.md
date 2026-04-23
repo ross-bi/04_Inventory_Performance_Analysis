@@ -422,6 +422,17 @@ Dashboard PDF export: [`powerbi/dashboard.pdf`](./powerbi/dashboard.pdf)
 | C | 7,561 | 61.67% | 5% |
 | Unclassified | 1,024 | 8.35% | — |
 
+### Top 5 Revenue Products (Class A)
+
+| Rank | Product | Revenue | Avg Selling Price |
+|---|---|---|---|
+| 1 | Jack Daniels No 7 Black | $5,101,920 | $36.23 |
+| 2 | Tito's Handmade Vodka | $4,819,073 | $30.31 |
+| 3 | Absolut 80 Proof | $4,538,121 | $24.48 |
+| 4 | Capt Morgan Spiced Rum | $4,475,973 | $22.83 |
+| 5 | Ketel One Vodka | $4,223,108 | $31.42 |
+
+
 ### Inventory Value Movement (2016)
 
 | Metric | Value | Implication |
