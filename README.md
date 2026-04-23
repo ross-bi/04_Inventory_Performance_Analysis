@@ -415,24 +415,64 @@ Dashboard PDF export: [`powerbi/dashboard.pdf`](./powerbi/dashboard.pdf)
 
 ### ABC Classification
 
-| Class | SKU Count | SKU% | Avg Gross Margin% | Revenue Contribution |
-|---|---|---|---|---|
-| A | 1,575 | 12.85% | 31.69% | 80% |
-| B | 2,101 | 17.14% | 33.28% | 15% |
-| C | 7,561 | 61.67% | 33.81% | 5% |
-| Unclassified | 1,024 | 8.35% | 32.74% | — |
+| Class | SKU Count | SKU%  | Revenue Contribution |
+|---|---|---|---|
+| A | 1,575 | 12.85% | 80% |
+| B | 2,101 | 17.14% | 15% |
+| C | 7,561 | 61.67% | 5% |
+| Unclassified | 1,024 | 8.35% | — |
+
+### Inventory Value Movement (2016)
+
+| Metric | Value | Implication |
+|---|---|---|
+| Beginning Inventory Value | $68,053,780 | Opening stock position Jan 2016 |
+| Ending Inventory Value | $79,704,851 | Closing stock position Dec 2016 |
+| Inventory Growth | **+$11,651,071 (+17.1%)** | Stock grew faster than sales — over-purchasing signal |
+| Total COGS | $313,385,300 | Estimated cost of goods sold across 12.8M transactions |
+| Total Sales Revenue | $452,062,952 | Full-year 2016 net revenue |
+
+> Ending inventory grew 17.1% year-over-year despite no evidence of equivalent demand growth.
+> This imbalance is most pronounced in C-class SKUs, which hold 61.67% of the catalogue
+> but contribute only 5% of revenue.
+
+### Stockout & Dead Stock Breakdown
+
+| Metric | Count | Rate | Notes |
+|---|---|---|---|
+| Total SKU-Store Ending Positions | 224,489 | — | Grain of `fact_inventory_snapshot` ENDING rows |
+| Stockout Positions (qty = 0) | 7,230 | **3.22%** | Below 5% target ✅ |
+| Dead Stock Positions (zero sales, full year 2016) | 5,755 | **2.56%** | 77,785 units of stranded inventory |
+| Dead Stock Units | 77,785 | — | Capital tied up with no demand signal |
 
 ---
 
 ## Business Recommendations
 
-1. **Reduce DSI from 86 days toward the 60–70 day range** — the current 86-day DSI is above the efficient liquor retail target. With ending inventory at $79.7M (+17.1% vs beginning), inventory growth outpaced sales growth. Focus purchase order reductions on the 7,561 C-class SKUs, which contribute only 5% of revenue but represent 61.67% of the product catalogue.
+1. **Protect Class A SKU availability — especially top 5 products** — 1,575 SKUs (12.85% of catalogue) generate 80% of $452M revenue. Jack Daniels No 7 ($5.1M) and Tito's Vodka ($4.8M) alone represent over 2% of total revenue each. At 2016 weekly run-rates, a single week of stockout on Jack Daniels No 7 alone represents ~$98K in lost sales; Tito's Handmade Vodka adds another ~$93K — together ~$191K/week at risk. Implement automated reorder triggers at 2× average weekly velocity.
+
+2. **Reduce DSI from 86 days toward the 60–70 day range** — the current 86-day DSI is above the efficient liquor retail target. With ending inventory at $79.7M (+17.1% vs beginning), inventory growth outpaced sales growth. Focus purchase order reductions on the 7,561 C-class SKUs, which contribute only 5% of revenue but represent 61.67% of the product catalogue.
 
 
-2. **Investigate seasonal demand and pre-position stock ahead of peak months** — December ($52.3M) and July ($49.7M) are the two highest-revenue months, together representing 22.6% of annual sales. February ($28.9M) is the annual trough. A forward-buying strategy in November and June for Class A SKUs, combined with purchase freezes in January for C-class items, would reduce DSI while protecting availability during peaks.
+3. **Investigate seasonal demand and pre-position stock ahead of peak months** — December ($52.3M) and July ($49.7M) are the two highest-revenue months, together representing 22.6% of annual sales. February ($28.9M) is the annual trough. A forward-buying strategy in November and June for Class A SKUs, combined with purchase freezes in January for C-class items, would reduce DSI while protecting availability during peaks.
 
-3. **Monitor the 3.22% stockout rate at store level** — while the aggregate rate is within target, Doncaster stores #76 and #73 (top 2 by revenue at $25.5M and $21.7M) likely have disproportionate impact if stocked out. Store-level drill-down in the Power BI Inventory Health page enables targeted replenishment prioritisation.
+4. **Monitor the 3.22% stockout rate at store level** — while the aggregate rate is within target, Doncaster stores #76 and #73 (top 2 by revenue at $25.5M and $21.7M) likely have disproportionate impact if stocked out. Store-level drill-down in the Power BI Inventory Health page enables targeted replenishment prioritisation.
 
+5. **Address the $11.7M inventory build-up before it compounds into dead stock** —
+   Ending inventory grew from $68.1M to $79.7M (+17.1%) across 2016 while total sales
+   units were 32.9M. The 7,561 C-class SKUs contribute only 5% of revenue but occupy
+   the majority of the long-tail catalogue. A purchase freeze on the bottom 20% of
+   C-class SKUs by revenue velocity (those not sold at all in Q4 2016) would prevent
+   the current 2.56% dead stock rate from deteriorating further into 2017.
+
+6. **Convert 77,785 units of dead stock into working capital through targeted markdowns** —
+   5,755 SKU-store positions have zero sales across the full year 2016, representing
+   stranded units with no observed demand signal. Prioritise clearance by ABC class:
+   first liquidate Class C dead stock (lowest opportunity cost), then Unclassified items
+   (no ABC revenue anchor). Class A/B dead stock positions, while fewer, should be
+   investigated for store transfer before markdown — a unit unsold in Store 50 may
+   still be in demand at Store 73.
+   
 ---
 
 ## Data Engineering Notes
