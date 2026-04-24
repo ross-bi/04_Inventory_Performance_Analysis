@@ -80,6 +80,34 @@ CAST(NULLIF(NULLIF(TRIM(sales_quantity), ''), 'Unknown') AS NUMERIC(10,2))
 
 ### 第三層 — Marts（星型結構）（`sql/04_marts_star_schema.sql`）
 
+**建立順序：**`dim_vendor` → `dim_store` → `dim_product` → `fact_sales` → `fact_inventory_snapshot` → ABC Classification UPDATE → `dim_date`
+
+| Step | Object | Source Tables | Key Operations |
+|---|---|---|---|
+| 1 | `dim_vendor` | `stg_purchases`, `stg_sales`, `stg_invoice_purchases`, `stg_purchase_prices` | UNION of 4 staging tables; `ROW_NUMBER()` generates `vendor_sk`; `MAX(vendor_name)` resolves duplicates |
+| 2 | `dim_store` | `stg_beg_inventory`, `stg_end_inventory`, `stg_sales` | UNION of 3 tables; city sourced from inventory tables (sales table has no city); `ROW_NUMBER()` generates `store_sk` |
+| 3 | `dim_product` | `stg_purchase_prices`, `stg_sales` | `FULL OUTER JOIN` to capture all SKUs; `abc_class` intentionally `NULL` at creation — back-filled in Step 6 |
+| 4 | `fact_sales` | `stg_sales` + 3 dim joins | `estimated_cogs = sales_quantity × default_cost_price`; 12,825,363 rows |
+| 5 | `fact_inventory_snapshot` | `stg_beg_inventory`, `stg_end_inventory` | `UNION ALL` of BEGINNING + ENDING rows; `snapshot_type` column enables single-table Turnover/DSI calculation; 431,018 rows |
+| 6 | ABC UPDATE | `fact_sales` → `dim_product` | 4-phase CTE: aggregate revenue → cumulative % → assign A/B/C → `UPDATE dim_product` in one pass |
+| 7 | `dim_date` | `fact_sales` (date range) | `generate_series(MIN(sales_date), MAX(sales_date))` — full 2016 calendar (366 days); adds `quarter`, `month_name`, `week_of_year`, `is_weekend` |
+
+**索引策略：**
+
+| Index | Column | Purpose |
+|---|---|---|
+| `idx_dim_vendor_sk` (UNIQUE) | `vendor_sk` | PK lookup |
+| `idx_dim_store_sk` (UNIQUE) | `store_sk` | PK lookup |
+| `idx_dim_product_sk` (UNIQUE) | `product_sk` | PK lookup |
+| `idx_dim_product_brand` | `brand` | Staging JOIN key |
+| `idx_fact_sales_product_sk` | `product_sk` | FK join to `dim_product` |
+| `idx_fact_sales_date` | `sales_date` | Date range filter & `dim_date` join |
+| `idx_fact_inv_product_sk` | `product_sk` | FK join to `dim_product` |
+| `idx_fact_inv_date` | `snapshot_date` | Date filter & `dim_date` join |
+| `idx_dim_date_key` (UNIQUE) | `date_key` | PK lookup |
+
+> **Design Note — `dim_product` 兩階段建立：** `abc_class` 在建立 `dim_product` 時為 `NULL`，待 `fact_sales` 載入後才透過單一 `UPDATE ... FROM CTE` 回填。此設計避免 Fact/Dim 循環依賴，同時將 12M 行的累積排名運算留在 PostgreSQL，防止 Power BI Import Mode 逾時。
+
 ---
 
 ## 2. 資料模型（PostgreSQL — 星型結構）
@@ -244,8 +272,7 @@ FROM abc_labels al WHERE dp.product_sk = al.product_sk;
 | `01_raw_columns_check.sql` | 欄位標頭稽核 | 驗證實際欄位名稱是否符合預期 |
 | `02_validate_raw.sql` | 7 節原始資料品質稽核 | NULL 檢查、業務規則、日期範圍、重複偵測、參照完整性 |
 | `03_staging_transform.sql` | Staging 層 ELT | 防禦性轉型、NULL 標準化、毛利率衍生、筆數稽核 |
-| `04_marts_star_schema.sql` | 星型結構 + ABC | 含代理鍵的維度/事實建立；4 階段靜態 ABC 分類 |
-| `05_marts_dim_date.sql` | 日期維度 | 含年/季/月/週屬性的完整 2016 年曆 |
+| `04_marts_star_schema.sql` | 星型結構 + ABC + 日期維度 | 含代理鍵的維度/事實建立；4 階段靜態 ABC 分類 ; 含年/季/月/週屬性的完整 2016 年曆|
 | `analysis/A. overview & Inventory Turnover & DSI.sql` | KPI 基準分析 | 資料表筆數、營收摘要、Turnover/DSI 計算 |
 | `analysis/B. Stockout Rate & Overstock (Dead Stock).sql` | 庫存健康度 | 各 SKU-門市的缺貨率與死庫存率 |
 | `analysis/C. ABC Classification Distribution.sql` | ABC 分佈 | 各 A/B/C 類的 SKU 數量、佔比與平均毛利率 |
@@ -460,11 +487,9 @@ for chunk in pd.read_csv(filepath, chunksize=100_000, dtype=str):
    # 步驟 4：Staging 轉換
    psql -f sql/03_staging_transform.sql
 
-   # 步驟 5：建立星型結構 + ABC 分類
+   # 步驟 5：建立星型結構 + ABC 分類 + 建立日期維度
    psql -f sql/04_marts_star_schema.sql
 
-   # 步驟 6：建立日期維度
-   psql -f sql/05_marts_dim_date.sql
    ```
 5. 執行 KPI 分析查詢（選擇性 — 輸出結果已存於 `output/analysis/`）：
    ```bash
@@ -491,7 +516,6 @@ for chunk in pd.read_csv(filepath, chunksize=100_000, dtype=str):
 │ ├── 02_validate_raw.sql # 7 節原始資料驗證
 │ ├── 03_staging_transform.sql # Staging ELT（型別轉換、NULL 處理）
 │ ├── 04_marts_star_schema.sql # 星型結構 + 靜態 ABC 分類
-│ ├── 05_marts_dim_date.sql # 日期維度
 │ └── analysis/ # KPI 與業務分析查詢
 ├── output/
 │ ├── mart_review/ # mart 資料表的 100 列預覽

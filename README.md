@@ -85,6 +85,34 @@ CAST(NULLIF(NULLIF(TRIM(sales_quantity), ''), 'Unknown') AS NUMERIC(10,2))
 
 ### Layer 3 — Marts (Star Schema) (`sql/04_marts_star_schema.sql`)
 
+**Creation order:**`dim_vendor` → `dim_store` → `dim_product` → `fact_sales` → `fact_inventory_snapshot` → ABC Classification UPDATE → `dim_date`
+
+| Step | Object | Source Tables | Key Operations |
+|---|---|---|---|
+| 1 | `dim_vendor` | `stg_purchases`, `stg_sales`, `stg_invoice_purchases`, `stg_purchase_prices` | UNION of 4 staging tables; `ROW_NUMBER()` generates `vendor_sk`; `MAX(vendor_name)` resolves duplicates |
+| 2 | `dim_store` | `stg_beg_inventory`, `stg_end_inventory`, `stg_sales` | UNION of 3 tables; city sourced from inventory tables (sales table has no city); `ROW_NUMBER()` generates `store_sk` |
+| 3 | `dim_product` | `stg_purchase_prices`, `stg_sales` | `FULL OUTER JOIN` to capture all SKUs; `abc_class` intentionally `NULL` at creation — back-filled in Step 6 |
+| 4 | `fact_sales` | `stg_sales` + 3 dim joins | `estimated_cogs = sales_quantity × default_cost_price`; 12,825,363 rows |
+| 5 | `fact_inventory_snapshot` | `stg_beg_inventory`, `stg_end_inventory` | `UNION ALL` of BEGINNING + ENDING rows; `snapshot_type` column enables single-table Turnover/DSI calculation; 431,018 rows |
+| 6 | ABC UPDATE | `fact_sales` → `dim_product` | 4-phase CTE: aggregate revenue → cumulative % → assign A/B/C → `UPDATE dim_product` in one pass |
+| 7 | `dim_date` | `fact_sales` (date range) | `generate_series(MIN(sales_date), MAX(sales_date))` — full 2016 calendar (366 days); adds `quarter`, `month_name`, `week_of_year`, `is_weekend` |
+
+**Index Strategy:**
+
+| Index | Column | Purpose |
+|---|---|---|
+| `idx_dim_vendor_sk` (UNIQUE) | `vendor_sk` | PK lookup |
+| `idx_dim_store_sk` (UNIQUE) | `store_sk` | PK lookup |
+| `idx_dim_product_sk` (UNIQUE) | `product_sk` | PK lookup |
+| `idx_dim_product_brand` | `brand` | Staging JOIN key |
+| `idx_fact_sales_product_sk` | `product_sk` | FK join to `dim_product` |
+| `idx_fact_sales_date` | `sales_date` | Date range filter & `dim_date` join |
+| `idx_fact_inv_product_sk` | `product_sk` | FK join to `dim_product` |
+| `idx_fact_inv_date` | `snapshot_date` | Date filter & `dim_date` join |
+| `idx_dim_date_key` (UNIQUE) | `date_key` | PK lookup |
+
+> **Design Note — Two-phase `dim_product` build：** `abc_class` is intentionally `NULL` when `dim_product` is first created. It is back-filled via a single `UPDATE ... FROM CTE` pass only after `fact_sales` has been loaded. This design avoids a Fact/Dim circular dependency and keeps the 12M-row cumulative ranking computation inside PostgreSQL, preventing Power BI Import Mode from timing out.
+
 ---
 
 ## 2. Data Model (PostgreSQL — Star Schema)

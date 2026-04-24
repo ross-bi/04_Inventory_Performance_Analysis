@@ -242,11 +242,39 @@ WHERE  dp.product_sk = al.product_sk;
 --      B -- ~20-30 % of SKUs
 --      C -- ~50-70 % of SKUs (long tail)
 -- ─────────────────────────────────────────────────────────
--- SELECT
---     abc_class,
---     COUNT(*)                                              AS sku_count,
---     ROUND(100.0 * COUNT(*) / SUM(COUNT(*)) OVER(), 2)    AS sku_pct,
---     ROUND(SUM(default_retail_price), 2)                  AS sample_value  -- proxy only
--- FROM marts.dim_product
--- GROUP BY abc_class
--- ORDER BY abc_class;
+SELECT
+    abc_class,
+    COUNT(*)                                              AS sku_count,
+    ROUND(100.0 * COUNT(*) / SUM(COUNT(*)) OVER(), 2)    AS sku_pct,
+     ROUND(SUM(default_retail_price), 2)                  AS sample_value  -- proxy only
+FROM marts.dim_product
+GROUP BY abc_class
+ORDER BY abc_class;
+
+
+-- ─────────────────────────────────────────────────────────
+-- 8. DIMENSION: dim_date (Calendar / Date Spine)
+-- ─────────────────────────────────────────────────────────
+
+
+-- 建立 Calendar / Date Spine View（在 PostgreSQL 生成，讓 Power BI 直接匯入）
+DROP TABLE IF EXISTS marts.dim_date;
+
+CREATE TABLE marts.dim_date AS
+SELECT
+    gs::DATE                                AS date_key,
+    EXTRACT(YEAR FROM gs)::INT              AS year,
+    EXTRACT(QUARTER FROM gs)::INT           AS quarter,
+    EXTRACT(MONTH FROM gs)::INT             AS month,
+    TO_CHAR(gs, 'Month')                    AS month_name,
+    EXTRACT(WEEK FROM gs)::INT              AS week_of_year,
+    EXTRACT(DOW FROM gs)::INT               AS day_of_week,
+    TO_CHAR(gs, 'Day')                      AS day_name,
+    (EXTRACT(DOW FROM gs) IN (0, 6))        AS is_weekend
+FROM generate_series(
+    (SELECT MIN(sales_date) FROM marts.fact_sales),
+    (SELECT MAX(sales_date) FROM marts.fact_sales),
+    INTERVAL '1 day'
+) gs;
+
+CREATE UNIQUE INDEX idx_dim_date_key ON marts.dim_date (date_key);

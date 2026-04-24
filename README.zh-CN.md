@@ -78,7 +78,37 @@ CAST(NULLIF(NULLIF(TRIM(sales_quantity), ''), 'Unknown') AS NUMERIC(10,2))
 | 跨年发票标记 | `is_carryover_invoice = TRUE`（invoice_date > 2016-12-31 者） |
 | 载入后笔数稽核 | 每次 INSERT 后与 raw 层比对笔数 |
 
+
 ### 第三层 — Marts（星型结构）（`sql/04_marts_star_schema.sql`）
+
+**建立顺序：**`dim_vendor` → `dim_store` → `dim_product` → `fact_sales` → `fact_inventory_snapshot` → ABC Classification UPDATE → `dim_date`
+
+| Step | Object | Source Tables | Key Operations |
+|---|---|---|---|
+| 1 | `dim_vendor` | `stg_purchases`, `stg_sales`, `stg_invoice_purchases`, `stg_purchase_prices` | UNION of 4 staging tables; `ROW_NUMBER()` generates `vendor_sk`; `MAX(vendor_name)` resolves duplicates |
+| 2 | `dim_store` | `stg_beg_inventory`, `stg_end_inventory`, `stg_sales` | UNION of 3 tables; city sourced from inventory tables (sales table has no city); `ROW_NUMBER()` generates `store_sk` |
+| 3 | `dim_product` | `stg_purchase_prices`, `stg_sales` | `FULL OUTER JOIN` to capture all SKUs; `abc_class` intentionally `NULL` at creation — back-filled in Step 6 |
+| 4 | `fact_sales` | `stg_sales` + 3 dim joins | `estimated_cogs = sales_quantity × default_cost_price`; 12,825,363 rows |
+| 5 | `fact_inventory_snapshot` | `stg_beg_inventory`, `stg_end_inventory` | `UNION ALL` of BEGINNING + ENDING rows; `snapshot_type` column enables single-table Turnover/DSI calculation; 431,018 rows |
+| 6 | ABC UPDATE | `fact_sales` → `dim_product` | 4-phase CTE: aggregate revenue → cumulative % → assign A/B/C → `UPDATE dim_product` in one pass |
+| 7 | `dim_date` | `fact_sales` (date range) | `generate_series(MIN(sales_date), MAX(sales_date))` — full 2016 calendar (366 days); adds `quarter`, `month_name`, `week_of_year`, `is_weekend` |
+
+**索引策略：**
+
+| Index | Column | Purpose |
+|---|---|---|
+| `idx_dim_vendor_sk` (UNIQUE) | `vendor_sk` | PK lookup |
+| `idx_dim_store_sk` (UNIQUE) | `store_sk` | PK lookup |
+| `idx_dim_product_sk` (UNIQUE) | `product_sk` | PK lookup |
+| `idx_dim_product_brand` | `brand` | Staging JOIN key |
+| `idx_fact_sales_product_sk` | `product_sk` | FK join to `dim_product` |
+| `idx_fact_sales_date` | `sales_date` | Date range filter & `dim_date` join |
+| `idx_fact_inv_product_sk` | `product_sk` | FK join to `dim_product` |
+| `idx_fact_inv_date` | `snapshot_date` | Date filter & `dim_date` join |
+| `idx_dim_date_key` (UNIQUE) | `date_key` | PK lookup |
+
+> **Design Note — `dim_product` 两阶段建立：** `abc_class` 在建立 `dim_product` 时为 `NULL`，待 `fact_sales` 加载后才透过单一 `UPDATE ... FROM CTE` 回填。此设计避免 Fact/Dim 循环依赖，同时将 12M 行的累积排名运算留在 PostgreSQL，防止 Power BI Import Mode 逾时。
+
 
 ---
 
@@ -244,8 +274,7 @@ FROM abc_labels al WHERE dp.product_sk = al.product_sk;
 | `01_raw_columns_check.sql` | 字段标头稽核 | 验证实际域名是否符合预期 |
 | `02_validate_raw.sql` | 7 节原始数据质量稽核 | NULL 检查、业务规则、日期范围、重复侦测、参照完整性 |
 | `03_staging_transform.sql` | Staging 层 ELT | 防御性转型、NULL 标准化、毛利率衍生、笔数稽核 |
-| `04_marts_star_schema.sql` | 星型结构 + ABC | 含代理键的维度/事实建立；4 阶段静态 ABC 分类 |
-| `05_marts_dim_date.sql` | 日期维度 | 含年/季/月/周属性的完整 2016 年历 |
+| `04_marts_star_schema.sql` | 星型结构 + ABC + 日期维度 | 含代理键的维度/事实建立；4 阶段静态 ABC 分类 ; 含年/季/月/周属性的完整 2016 年历 |
 | `analysis/A. overview & Inventory Turnover & DSI.sql` | KPI 基准分析 | 数据表笔数、营收摘要、Turnover/DSI 计算 |
 | `analysis/B. Stockout Rate & Overstock (Dead Stock).sql` | 库存健康度 | 各 SKU-门市的缺货率与死库存率 |
 | `analysis/C. ABC Classification Distribution.sql` | ABC 分布 | 各 A/B/C 类的 SKU 数量、占比与平均毛利率 |
@@ -460,11 +489,9 @@ for chunk in pd.read_csv(filepath, chunksize=100_000, dtype=str):
    # 步骤 4：Staging 转换
    psql -f sql/03_staging_transform.sql
 
-   # 步骤 5：建立星型结构 + ABC 分类
+   # 步骤 5：建立星型结构 + ABC 分类 + 建立日期维度
    psql -f sql/04_marts_star_schema.sql
 
-   # 步骤 6：建立日期维度
-   psql -f sql/05_marts_dim_date.sql
    ```
 5. 执行 KPI 分析查询（选择性 — 输出结果已存于 `output/analysis/`）：
    ```bash
@@ -491,7 +518,6 @@ for chunk in pd.read_csv(filepath, chunksize=100_000, dtype=str):
 │ ├── 02_validate_raw.sql # 7 节原始数据验证
 │ ├── 03_staging_transform.sql # Staging ELT（型别转换、NULL 处理）
 │ ├── 04_marts_star_schema.sql # 星型结构 + 静态 ABC 分类
-│ ├── 05_marts_dim_date.sql # 日期维度
 │ └── analysis/ # KPI 与业务分析查询
 ├── output/
 │ ├── mart_review/ # mart 数据表的 100 列预览
