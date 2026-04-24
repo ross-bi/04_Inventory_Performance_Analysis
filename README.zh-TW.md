@@ -335,7 +335,7 @@ FROM abc_labels al WHERE dp.product_sk = al.product_sk;
 > 然而，5 個庫存 KPI（庫存週轉率、DSI、缺貨率、死庫存率、再訂購點）均衍生自 `fact_inventory_snapshot`，該表以**門市 × 商品 × 日期**為粒度記錄庫存位置，設計上不含 `vendor_sk`。
 > 供應商交叉篩選器對庫存導向頁面無效 — 此排除為刻意設計，非遺漏。供應商層級採購分析規劃為未來功能。
 
-儀表板 PDF 匯出：[`powerbi/dashboard.pdf`](./powerbi/dashboard.pdf)
+儀表板 PDF 匯出：[`powerbi/Inventory_Performance.pdf`](./powerbi/Inventory_Performance.pdf)
 
 ---
 
