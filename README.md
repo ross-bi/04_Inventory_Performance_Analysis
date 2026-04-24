@@ -402,7 +402,7 @@ most critical shortfalls at a glance.
 > A vendor slicer would be inert on inventory-focused pages — this exclusion is intentional,
 > not an omission. Vendor-level procurement analysis is planned as a future enhancement.
 
-Dashboard PDF export: [`powerbi/dashboard.pdf`](./powerbi/dashboard.pdf)
+Dashboard PDF export: [`powerbi/Inventory_Performance.pdf`](./powerbi/Inventory_Performance.pdf)
 
 ---
 
