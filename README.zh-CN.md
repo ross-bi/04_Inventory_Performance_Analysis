@@ -335,7 +335,7 @@ FROM abc_labels al WHERE dp.product_sk = al.product_sk;
 > 然而，5 个库存 KPI（库存周转率、DSI、缺货率、死库存率、再订购点）均衍生自 `fact_inventory_snapshot`，该表以**门市 × 商品 × 日期**为粒度记录库存位置，设计上不含 `vendor_sk`。
 > 供货商交叉筛选器对库存导向页面无效 — 此排除为刻意设计，非遗漏。供货商层级采购分析规划为未来功能。
 
-仪表板 PDF 汇出：[`powerbi/dashboard.pdf`](./powerbi/dashboard.pdf)
+仪表板 PDF 汇出：[`powerbi/Inventory_Performance.pdf`](./powerbi/Inventory_Performance.pdf)
 
 ---
 
