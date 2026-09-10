@@ -536,7 +536,7 @@ for chunk in pd.read_csv(filepath, chunksize=100_000, dtype=str):
 
 ## 作者
 
-Ross Tang | [GitHub](https://github.com/ross-bi)
+Chung Man Tang | [GitHub](https://github.com/ross-bi)
 
 ## 授权条款
 

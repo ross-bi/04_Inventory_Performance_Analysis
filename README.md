@@ -619,7 +619,7 @@ The full file must be downloaded from the [PwC source](https://www.pwc.com/us/en
 
 ## Author
 
-Ross Tang | [GitHub](https://github.com/ross-bi)
+Chung Man Tang | [GitHub](https://github.com/ross-bi)
 
 ## License
 
